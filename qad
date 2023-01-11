@@ -1,0 +1,529 @@
+I having total 3 years of experience in DevOps. 
+In these 3 years of experience In these 3 years I have worked on different different devops tools.
+
+GIT as a version control system(VCS), 
+Bitbucket, Github - For Source code management 
+Maven as a build tool.
+Nexus repository --- Artifact tool 
+Azure DevOps and Jenkins as a CI/CD pipeline tool using 2.0 V and latest 2.6 V
+Docker as a contenarasation tool.
+Ansible as a configuration management and deployment tool
+Service now and Jira as a tickting tool.
+
+I have written yaml based pipeline in Azure Devops for build and Deploy the application
+I have done the templating in Azure DevOps pipeline 
+I have integrated Sonarqube and Veracode in CI build pipeline for SAST code scan in Azure DevOps
+I have written Dockerfile.
+I have written playbooks and roles in ansible.
+
+CI Pipeline stages
+
+Repo checkout
+Code build
+SAST code scan
+Unit test
+Publist Unit test result (Covertura)- Code Covrage tool
+Docker Image build and push 
+
+CD Pipeline
+
+Docker pull on traget agent
+Docker run
+
+Roles and responsibilities
+
+Taking care of build and release from end to end, Monitoring/troubleshooting Azure Devops build.
+Writing dockerfile to create image, building and creating container using Docker.
+Creating and managing the branch  
+
+
+JDK 1.8 V (I am using)
+
+
+
+GIT----------VCS (git version 2.27.0)
+-------------------------------------
+
+Which flavor of GIT you are using ---- GitHub, Bitbucket 
+
+Which branching stetagies you are follow 
+
+We are follow standard GIT branching stetgies. Git tells to use feature branch
+We have master and develop branch and other feature branch. 
+release happens from the master branch.
+
+Every developer having their own feature branch on which they are working on and 
+once the feature development is complete 
+then developer make the pool request to merge the code and merge to the develop branch 
+after that build is happened and it generate the artifact.
+
+git bisect - To find the first commit that introduce the bug by using  bisection method
+
+How to delete branch
+
+git branch -d <branch_name>  - To delete local branch
+
+git push origin -delete <branch_name> ---- To delete remote branch
+
+
+git merge <branch_name> - It is a way to merge different branches together. 
+it will keep the commit history
+
+git rebase <branch_name> - It is a way to merge different branches together. 
+but it will delete the commit history
+
+
+git pull= git fetch + git merge 
+
+
+Maven ------------ Build tool (3.6.3 V)
+--------------------------------------------
+
+Maven life cycle
+
+1. Validation - Project structure is correct or not, check if all necessary information for the build is available
+
+2. Compilation - Compile the source code
+
+3. Test ---- Run unit tests
+
+4. Packaging -Package compiled source code (jar, war, …)
+
+5. Verify - Run checks to verify the package quality criteria.
+
+6. Install - Install the package in local maven repository
+
+By default Maven local repository is in user home directory in .M2 directory is maven local repository. 
+
+7. Deploy - Copy the final artifact to the remote repository(nexus).
+
+
+Types of repository
+
+Central repo ---- Hosted by Maven
+Private repo ---- Managed by specific organization in my organization we having Nexus
+Local repo ------ In local machine in user home directory in .M2 directory in repository
+
+
+Difference in Install and deploy.
+
+mvn clean install - It will clear the local target directory 
+and install in the local repo
+
+mvn clean deploy - it will deploy to the remote repo ( on Nexus ).
+
+mvn install pom.xml -s <path of the setting.xml> -------- Command to compile the project
+
+ Path - /opt/mytools/maven/apache-maven-3.6.3/conf/settings.xml ( in case of any private repo is mentioned)
+
+POM (Project object model)
+
+Every project having one POM.XML file it contains the project structure
+
+Structure of POM.xml
+
+<project.xmls="URL">
+<modelId>   </modelId>
+<groupId>   </groupId>
+<artifactId>  </artifactId>
+<packaging>   </packaging>
+<version>     </version>
+<name>
+<url>
+<dependencies>
+   <dependency>
+      <groupid>
+
+
+For packaging 
+
+We are using continuation file or script for packaging.
+
+mv ${WORKSPACE}/target/*.war ${WORKSPACE}/target/*artifacts
+cd ${WORKSPACE}/target/
+zip -r *artifacts-${delivery_version}-${BUILD_NUMBER}.zip *artifacts
+
+
+Jenkins ----- CI/CD ( Continuous Integration and Continuous delivery) pipeline tool.
+------------------------------------------------------------------------------------
+
+Currently we are using Jenkins 2.2.0 Version and latest version 2.6 V
+
+I have installed many plugins in Jenkins.
+
+We can add the plugins in Jenkins as below
+
+Jenkins-----> Manage Jenkins ---------> Manage plugins
+
+GitHub plugins
+Maven plugins
+Sonar queue plugins
+Deploy to container plugin - For Docker
+pipeline plugins
+
+
+Configure system (Will set up the SonarQube server, Mail server set up)
+
+Jenkins ---> manage Jenkins---> configure system--->SonarQube server
+
+Configure global tools (All the global tools  configuration will do here. Java, Maven, sonar-scanner)
+
+Jenkins--->manage Jenkins--->global tool configuration
+
+How to add new node in Jenkins
+
+Manage Jenkins---->Manage nodes 
+
+For new node we have give the node details (IP address, Java path, root credentials).
+
+Whenever we add new node then master will copy one remoting.jar file on slave machine 
+and then it will running and remoting.jar file needs Java to run.
+
+Pipeline in Jenkins
+
+I have written pipeline 
+
+1.Freestyle job (Simple UI based)
+
+2.Declearative pipeline( Using groovy language)
+
+Types of security 
+
+Manage Jenkins->global Security
+
+Three types of security I did
+
+Matrix based security
+Project matrix security
+We can set our LDAP server for authentication
+
+
+How many states in your pipeline
+
+CI pipeline
+
+Five stages(multistage pipeline) in my  CI pipeline.
+
+1.Git clone ----------------------This step clone the Git repo
+2.Build --------------------------This step build the code
+3.Sonalqueue scan  - -------------This step do quality of code testing
+4.docker image build -------------This step build the docker image
+5.Email sending ------------------In this step email will be sent either job successful or fail.
+
+
+We have different CI pipeline job and We having different CD job (delivery pipeline).
+
+
+We having different CD(delivery pipeline).
+
+We pull the latest Image and run the image
+
+ 
+
+Syntax of pipeline
+
+Pipeline run in sequential 
+
+pipeline
+{
+   agent 
+            {
+               label 'agent_name'
+            }
+    tools
+       {
+           maven 'Maven3.6'
+           jdk 'Java1.8'
+           
+       }
+ stages
+     {
+          stage ('GIT CHECKOUT')
+                   {
+                       steps
+                            {
+                                 step([$class: 'WsCleanup'])
+                                 
+                                 echo "Clonning the code"
+                                 checkout([$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/Bkumar89/Sampledemoproject.git']]])
+                             }
+                     
+                    }
+          stage ('BUILD')
+                   {
+                       steps
+                            {
+                                 withEnv(["JAVA_HOME=${ tool 'Java1.8' }"])
+                                  {
+                                      script
+                                       {
+                                            def mavenhome=tool 'Maven3.6'
+                                            //def Java=tool 'Java1.8'
+                                            sh "mvn -f ${WORKSPACE}/pom.xml clean install"
+                                        }
+                                        
+                                   }
+                             }
+                     
+                    }
+
+
+
+Where we keep the Jenkins pipeline code
+
+There are two approach to do that
+
+1.We can write in Jenkins pipeline in Jenkins it self ( This not a good way)
+2.We can write the Jenkinsfile and keep that file in GitHub repository.
+
+
+How to restore the Jenkins
+
+There is .Jenkins dir in user's home directory in that all the Jenkins configuration 
+is present in that directory we will take take the backup
+in zip file and take it into the other server.
+
+
+Docker --- (V20.10.6) Containerization tool
+--------------------------------
+
+Docker do the OS level virtualization not hardware level. 
+
+It is light weight
+
+Port forwarding biggest advantage
+
+Portable	
+
+We pack all the dependency in single file and create the Image 
+
+
+Sample example of docker file 
+
+FROM centos:latest --- What base image we need 
+
+LABEL JenkinsVersion="2.4.0" \  ------------------Information
+      contact="Sujeet" \
+      application="Jenkins in Docker" \
+      base.image="centos"
+
+RUN mkdir -p /opt/tomcat   ---------------------------- To excute the Linux command 
+
+RUN yum install -y java-1.8.0-openjdk
+
+RUN yum install -y unzip \
+    && yum install -y zip
+
+ADD apache-tomcat-9.0.29.tar.gz /opt/tomcat    ---------------------------Similar to copy but ADD provide feature to download file from internet and extract it
+
+#ENV CATALINA_HOME /opt/tomcat/apache-tomcat-9.0.29
+
+#ENV JAVA_HOME=/usr/java/latest
+
+#ENV PATH $CATALINA_HOME/bin:$PATH
+
+COPY jenkins.war /opt/tomcat/apache-tomcat-9.0.29/webapps   ------------------Copy the file in local system
+
+WORKDIR /opt/tomcat/apache-tomcat-9.0.29   ----------------------------Set the work directory for container
+
+EXPOSE 8080  
+
+ENTRYPOINT /opt/tomcat/apache-tomcat-9.0.29/bin/startup.sh && /bin/bash --------------First command will be execute from ENTRYPOINT.
+
+
+To build the image
+
+docker build -t <imagename> -f <dockerfilename> <path of the docker context root directory>  -------------- To build the image 
+
+Note - Image first name Should be Docker repository name  
+
+We are using Docker Hub as a registry to keep the Images.
+
+Build context directory - Where we keep all the necessary file to build the Image that directory is called build context directory.
+
+
+Docker Commands
+
+docker ps - to see the running list of containers.
+
+docker ps -a - to see all the running or stopped containers.
+
+docker image ls - to see all the images in local.
+
+docker push <image_name> -- It will push the image in docker hub
+
+docker rmi -f <imageid1> <imageid2> <imageid3> .... - to delete the images from local.
+
+docker rm -f <containerid1> <containerid2> <containerid3> ...... - to delete the running containers forcefully.
+
+docker stop <containerid1> <containerid2> <containerid3> .....  - to stop the running container.
+
+To build the Docker image from docker file:
+
+docker build -t <imagename> -f <dockerfilename> <path of the docker context root directroy>
+
+example - docker build -t bishkumar/tomcat_jenkins:9.0.29 -f Dockerfile .
+
+To create the container from image:
+
+docker run -it -d -p <containerport>:<hostport> --name <containername> <imagename> <terminal like /bin/bash>
+
+example: docker run -it -d -p 9090:8080 --name myjenkins sujeku20/tomcat_jenkins:9.0.29 /bin/bash
+
+To login to the docker container:
+
+docker exec -it <containerid/name> bash
+or
+docker attach <containername/id>
+
+example - docker exec -it myjenkins
+
+
+CMD sets default command and/or parameters, which can be overwritten from command line when docker container runs.
+
+ENTRYPOINT command and parameters will not be overwritten from command line. Instead, all command line arguments will be added after ENTRYPOINT parameters.
+
+
+
+
+Ansible (2.9.6 V)
+Configuration and Deployment management tool.
+--------------------------------------------------------------
+
+
+I have written playbook
+
+
+Model - Module is a set of similar commands. Which are provided by the ansible
+
+Playbook- Set of instruction written in the YAML language using module to perform some sort of task 
+
+
+Sample syntax of playbook.
+
+---
+- hosts: Server_name
+  become: yes
+  become_user: ansadmin
+  become_method: sudo
+  vars:
+    tomcat_url: "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.34/bin/apache-tomcat-9.0.34.tar.gz"
+    install_dir: "/home/ansadmin/tomcat"
+    tomcat_file_name: "apache-tomcat-9.0.34.tar.gz"
+  tasks:
+  - name: Create the tomcat Directory
+    file:
+      path: "{{ install_dir }}"
+      state: directory
+      mode: 0755
+  - name: Download Tomcat9
+    get_url:
+      url: "{{ tomcat_url }}"
+      dest: "{{ install_dir }}"
+      owner: ansadmin
+      group: ansadmin
+      mode: 0755
+
+
+Have you created role?
+
+Role I also know.
+
+Difference between Playbook and roles
+
+Playbook
+
+Playbook is a set of instruction we can write more than on task in a playbook
+
+But Playbooks is not a modularizes approach and architecture wise playbooks doesn't look good 
+
+
+Role
+
+Better modular approach and provide better abstraction.
+
+How to create role
+
+ansible-galaxy init <rolename>
+
+ex: ansible-galaxy init tomcat
+
+A role directory structure contains directories: defaults, vars, tasks, files, templates, meta, handlers. 
+Each directory must contain a main.yml file which contains relevant content.
+
+defaults: Contains default variables for the role. Variables in default have the lowest priority so they are easy to override.
+
+vars: Contains variables for the role. Variables in vars have higher priority than variables in defaults directory.
+
+tasks: Contains the main list of steps to be executed by the role.
+
+files: Contains files which we want to be copied to the remote host. We don’t need to specify a path of resources stored in this directory.
+
+templates: Contains file template which supports modifications from the role. We use the Jinja2 templating language for creating templates.
+
+meta: Contains metadata of role like an author, support platforms, dependencies.
+
+handlers: Contains handlers which can be invoked by “notify” directives and are associated with service.
+
+
+To call the ansible roles, create a playbook and call the ansible role from playbook 
+and execute the playbook for ansible execution.
+
+
+Ansible commands
+---------------
+
+Execute the Ansible Playbook:
+
+ansible-playbook -i /etc/ansible/hosts playbook_name.yaml
+
+dry run of playbook:
+
+ansible-playbook -i /etc/ansible/hosts playbook_name.yaml --check
+
+syntax check of the playbook:
+
+ansible-playbook -i /etc/ansible/hosts playbook_name.yaml --syntax-check
+
+To execute the role
+
+ansible-playbook -i <inventory host file path> <playbook file path>
+
+ex: ansible-playbook -i inventory/hosts playbooks/playbook_name.yml
+
+
+Azure pipeline Syntax 
+
+stages:
+- stage: PYTHON_BUILD
+  jobs:  
+  - job: PYTHON_BUILD
+    displayName: PYTHON BUILD
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        python38:
+          python.version: '3.9'       
+    steps:
+ #   - checkout: ${{ parameters.BITBUCKET_BRANCH_NAME }}
+ #     displayName: Checkout sgo-mt-backend
+ #     submodules: true
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+      displayName: 'Use Python $(python.version)'
+
+
+
+Sonar queue
+-----------
+
+We have to install the Sonar plugins
+
+Soner queue should be alredy running 
+
+We will use the tocken to login to Sonarqueue
+
+Sonarscanner- It is tool use to do SAST( static appliction security testing)

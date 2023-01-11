@@ -1,0 +1,212 @@
+Kubernetes latest 1.23 but worked on 1.19
+
+On master 
+
+API server ------- The API server intarct with kubectl it acts as a frontend of the kubernetes
+etcd --------------It stores all worker nodes and master nodes information 
+controller---------It keep an eye on node , container when it goes down it also make decision to bring up new container
+scheduler----------responsble for distributing the workload across multiple nodes 
+
+On worker
+
+kubelet( maybe on master aslo) --------agent runs on each node on the cluster it is resopnsible for making sure 
+that container are running as expected
+
+Container run time--- Docker engine
+
+kube proxy------For networking and load balancing
+
+
+POD - POD is smallest element in kubernetes
+
+Example Pod_definition
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+
+
+
+Replication controller - It help us to run the mutiple container with single image means it will provide high avability for the application
+
+Ex
+
+apiVersion: V1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+
+
+Note: In Replication controller there is no lable and selector parameter
+
+
+
+
+Benifit of ReplicaSet
+
+High avaibility
+Load balancing
+Scaling
+
+
+Replica set - We can create multipe version of a singe application with singel image
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  selector:
+    matchLabels:
+      app: myapp
+
+
+Labels and selectors
+
+
+
+
+
+Deployments - It is a controller in Kubernetes which deploy the mutiple version of application and manage replicaset in the cluster
+
+Exampe of deployment file
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  selector:
+    matchLabels:
+      app: myapp
+
+
+
+
+
+Commands
+
+Pod Commands
+
+kubectl get pods ------------- To get the all pods info
+
+kubectl get nodes -------------to get the nodes info
+
+kubectl run <pod_name> --image=<image_name>  To create the pod using image
+
+ex kubectl rum nginx --image=nginx
+
+kubectl delete pod <pod_name> ----------------- To delete the pod
+
+ex kubctl delete pod nginx
+
+Replicaset commands
+
+kubectl apply -f <file_name> ----------- to create pod replicaset and deployments 
+
+kubectl get replicaset ------------------ To get the info about replicaset 
+
+kubectl replace -f <replicaset_file_name> ---- To replace the replicaset file after changes made in the file
+
+kubectl scale --replicas=5 -f <replicaset_file_name> --------- It scale up the replica to 5 without doing any changes in replicaset_file.yml
+
+kubectl delete replicaset <file_name> -------------------It will delete the replicaset and all underlying pods in that replica set 
+
+kubectl describe replicaset <replicaset_name> -----------It will give the details about replicaset
+
+
+kubectl scale replicasets --replicas=5 <replica-set-name>  -------------- It will scale up the number of pod till 5
+
+
+Deployments Commands
+--------------------
+
+kubectl apply -f <file_name> --------------------- To create the deployment
+
+kubectl get deployments ------------------------- To see all the deployment
+
+kubectl create deployment <deployment_name> --image=<image_name> --------------- Create the deployment using kubectl of single pod
+
+kubectl scale deployment --replicas=x <deployment_name> --------- To scale the deployment upto x where x is 1,2,3,4.... 
+
+kubectl rollout status deployment.app/<deployment_name> ----------To see the deployment status after apllyning the deployment
+
+kubectl rollout history deployment.app/<deployment_name> ---------To see the history of revision of deployment
+
+kubectl rollout undo deployment/<deployment_name> ---------------- To rollout the deployment to previous version of deployment 
+
+
+
+Three type of Services in Kubernetes
+
+Node port - A NodePort service opens a specific port on all the Nodes in the cluster
+
+Cluser ip -  It creates a service inside the Kubernetes cluster, which can be accessed by other applications in the cluster
+
+Load balaencer- A LoadBalancer is a standard way to expose a Kubernetes service externally so it can be accessed over the internet.
+
+
+
+Example of service.yml
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: myapp
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: myapp
