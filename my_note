@@ -1,0 +1,20 @@
+Git PAT
+
+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
+
+
+
+How to make local repo into remote repo
+
+
+git init   - Initialize the local directory as a Git repository
+
+git add . -  Add the files in your new local repository
+
+git commit -m "first commit" - Commit the files that you've staged in your local repository
+
+git branch -M main - It will give name to local branch
+
+git remote add origin <URL> - Add the remote origin
+
+git push -u origin main  - Push the code to github remote repo 
